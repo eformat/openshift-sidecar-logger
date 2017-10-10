@@ -23,7 +23,7 @@ Configurable Constraints:
 
 The logging sidecar is:
 
-* small footprint (mempory, cpu)
+* small footprint (memory, cpu)
 * based on a supported
 * simple to configure
 
