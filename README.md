@@ -62,7 +62,7 @@ oc new-project logging-sidecar-example --display-name="Logging Sidecar Example" 
 
 #### Create example application by hand
 
-Allow the namespace `default` system account view access (this is so the `oc` command can read container logs)
+Allow the namespace `default` system account view access (this is so the `oc` command in the sidecar can read container logs)
 
 ```
 oc policy add-role-to-user view system:serviceaccount:$(oc project -q):default
