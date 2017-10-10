@@ -24,7 +24,7 @@ Configurable Constraints:
 The logging sidecar is:
 
 * small footprint (memory, cpu)
-* based on a supported
+* based on a supported image
 * simple to configure
 
 Build the `logging-sidecar` image so it can be shared in the `openshift` namespace. Requires a user with `edit` permission on the `openshift` namespace:
