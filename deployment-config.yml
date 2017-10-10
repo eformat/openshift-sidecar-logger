@@ -44,8 +44,7 @@ spec:
         args:
           - /bin/bash
           - -c
-          - while [[ "${FEED_NAME_HEADER}" && "${SYSTEM_NAME_HEADER}" && "${ENV_NAME_HEADER}" ]];
-            do oc logs --since ${GETLOG_TIME} ${MY_POD_NAME} -c ${CONTAINER_NAME}
+          - while true; do oc logs --since ${GETLOG_TIME} ${MY_POD_NAME} -c ${CONTAINER_NAME}
             | grep -P ${GREP_PATTERN} | gzip -c -f | curl -sS --data-binary @- ${LOG_SERVER_URI}
             -H "Feed:${FEED_NAME_HEADER}" -H "System:${SYSTEM_NAME_HEADER}" -H "Environment:${ENV_NAME_HEADER}"
             -H 'Compression:Gzip' ; sleep ${SLEEP_TIME}; done
