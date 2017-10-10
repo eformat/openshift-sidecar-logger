@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: myconfigmap
+  name: logging-sidecar
 data:
   container_name: count
   grep_pattern: 'Y\w+\s+F\w+$'
-  sleep_time: '56'
-  getlog_time: 60s
-  log_server_uri: 'http://localhost:8080/datafeed'
+  sleep_time: '550'
+  getlog_time: 600s
+  log_server_uri: 'http://b9941093.ngrok.io/stroom/datafeed'
   feed_name_header: CSV_FEED
   system_name_header: EXAMPLE_SYSTEM
   env_name_header: EXAMPLE_ENVIRONMENT
