@@ -14,8 +14,8 @@ External service supports:
 
 Configurable Constraints:
 
-* Some duplicate log entries may be sent (using `oc log --since` is used for batch log collection)
-* The amount of time (`getlog_time` - `sleep_time`) needs to be set to allow batch send. Must have: `sleep_time` < `getlog_time` else logs will be missed i.e. sidecar sleep's for longer than batch log collection time. The larger the difference in (`getlog_time` - `sleep_time`) the more log duplicates.
+* Some duplicate log entries may be sent (using `oc log --since-time` is used for batch log collection)
+* The sidecar collects logs approximately every `sleep_time` seconds. There is some variable amount of time based on processing time and actual sidecar sleep time that is factored into log collection time.
 
 ## Usage
 
@@ -41,8 +41,7 @@ Parameter            | Description             | Example Value
 -------------------- | ----------------------- | -------------
 `container_name` | Name of the container to retrieve logs from | count
 `grep_pattern` | PCRE Pattern to pass to `grep` (see man grep -P) | Y\w+\s+F\w+$
-`sleep_time` | Time for sidecar to sleep (< getlog_time) | '56'
-`getlog_time` | Get container logs every getlog_time | 60s
+`sleep_time` | Time for logging sidecar to sleep (seconds) | '60'
 `log_server_uri` | Batch log collection server URI | 'http://localhost:8080/datafeed'
 `feed_name_header` | Feed Name Header value| CSV_FEED
 `system_name_header` | System Name Header value | EXAMPLE_SYSTEM

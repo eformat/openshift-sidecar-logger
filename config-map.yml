@@ -5,9 +5,8 @@ metadata:
 data:
   container_name: count
   grep_pattern: 'Y\w+\s+F\w+$'
-  sleep_time: '550'
-  getlog_time: 600s
-  log_server_uri: 'http://b9941093.ngrok.io/stroom/datafeed'
+  sleep_time: '60'
+  log_server_uri: 'http://localhost:8080/datafeed'
   feed_name_header: CSV_FEED
   system_name_header: EXAMPLE_SYSTEM
   env_name_header: EXAMPLE_ENVIRONMENT

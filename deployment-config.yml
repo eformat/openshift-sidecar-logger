@@ -44,10 +44,12 @@ spec:
         args:
           - /bin/bash
           - -c
-          - while true; do oc logs --since ${GETLOG_TIME} ${MY_POD_NAME} -c ${CONTAINER_NAME}
+          - 'duration=2; while true; do start=${SECONDS}; since=$(date --date="- $duration seconds" --rfc-3339=seconds | sed "s/ /T/");
+            echo "${HOSTNAME}: $(date +''%Y-%m-%d %H:%M:%S:%N'' | sed ''s/\(:[0-9][0-9]\)[0-9]*$/\1/'') duration: $duration since: $since";
+            oc logs --since-time $since ${MY_POD_NAME} -c ${CONTAINER_NAME}
             | grep -P ${GREP_PATTERN} | gzip -c -f | curl -sS --data-binary @- ${LOG_SERVER_URI}
             -H "Feed:${FEED_NAME_HEADER}" -H "System:${SYSTEM_NAME_HEADER}" -H "Environment:${ENV_NAME_HEADER}"
-            -H 'Compression:Gzip' ; sleep ${SLEEP_TIME}; done
+            -H "Compression:Gzip"; sleep ${SLEEP_TIME}; duration=$((${SECONDS} - $start)); done'
         env:
           - name: MY_POD_NAME
             valueFrom:
@@ -68,11 +70,6 @@ spec:
               configMapKeyRef:
                 name: logging-sidecar
                 key: sleep_time
-          - name: GETLOG_TIME
-            valueFrom:
-              configMapKeyRef:
-                name: logging-sidecar
-                key: getlog_time
           - name: LOG_SERVER_URI
             valueFrom:
               configMapKeyRef:
