@@ -47,6 +47,14 @@ Parameter            | Description             | Example Value
 `system_name_header` | System Name Header value | EXAMPLE_SYSTEM
 `env_name_header` | Environment Name Header value | EXAMPLE_ENVIRONMENT
 
+If any `one` of the following `ConfigMap` entries are unset, the sidecar logger be a noop (do nothing):
+
+```
+  feed_name_header: ''
+  system_name_header: ''
+  env_name_header: ''
+```
+
 #### Create example project
 
 As a normal user:
@@ -100,10 +108,10 @@ In the example pod, the `count` container logs once a second.
 oc logs -c count $(oc get pods --show-all=false -lapp=counter --template='{{range .items}}{{.metadata.name}}{{end}}')
 ```
 
-The `count-log-1` sidecar collects `count` container logs, create a GZIP batch and forwards to the log server endpoint.
+The `logging-sidecar` sidecar collects `count` container logs, create a GZIP batch and forwards to the log server endpoint.
 
-The REST call time to send GZIP'ed logs to the log server endpoint is logged to STDOUT:
+The REST call time to send GZIP'ed logs to the log server endpoint is logged to STDOUT, any errors will also be reported here:
 
 ```
-oc logs -c count-log-1 $(oc get pods --show-all=false -lapp=counter --template='{{range .items}}{{.metadata.name}}{{end}}')
+oc logs -c logging-sidecar $(oc get pods --show-all=false -lapp=counter --template='{{range .items}}{{.metadata.name}}{{end}}')
 ```

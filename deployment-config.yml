@@ -39,7 +39,7 @@ spec:
         volumeMounts:
         - name: varlog
           mountPath: /var/log
-      - name: count-log-1
+      - name: logging-sidecar
         image: docker-registry.default.svc:5000/openshift/logging-sidecar
         args:
           - /bin/bash
