@@ -4,7 +4,7 @@ metadata:
   name: myconfigmap
 data:
   container_name: count
-  grep_pattern: 'Y\w+\s+F\w'
+  grep_pattern: 'Y\w+\s+F\w+$'
   sleep_time: '56'
   getlog_time: 60s
   log_server_uri: 'http://localhost:8080/datafeed'

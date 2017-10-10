@@ -40,7 +40,7 @@ A `ConfigMap` is used to configure the sidecar logging container.
 Parameter            | Description             | Example Value
 -------------------- | ----------------------- | -------------
 `container_name` | Name of the container to retrieve logs from | count
-`grep_pattern` | PCRE Pattern to pass to `grep` (see man grep -P) | 'Y\w+\s+F\w'
+`grep_pattern` | PCRE Pattern to pass to `grep` (see man grep -P) | Y\w+\s+F\w+$
 `sleep_time` | Time for sidecar to sleep (< getlog_time) | '56'
 `getlog_time` | Get container logs every getlog_time | 60s
 `log_server_uri` | Batch log collection server URI | 'http://localhost:8080/datafeed'
@@ -80,11 +80,20 @@ Create the `deploymentconfig` for the example application pod:
 oc apply -f deployment-config.yml
 ```
 
+#### Rollout a new configuration
+
+Update the `ConfigMap` and redeploy the example pod
+
+```
+oc apply -f config-map.yml
+oc rollout latest counter
+```
+
 #### Testing
 
 Setup the `ConfigMap` to point to your collection REST endpoint `log_server_uri`.
 
-The example uses `YOLO FOOBAR` as the string we filter against using the PCRE `grep_pattern:` `'Y\wO*F\w*'`
+The example uses `YOLO FOOBAR` as the string we filter against using the PCRE `grep_pattern:` `Y\w+\s+F\w+$`
 
 In the example pod, the `count` container logs once a second.
 
