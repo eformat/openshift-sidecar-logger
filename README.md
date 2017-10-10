@@ -102,7 +102,7 @@ oc logs -c count $(oc get pods --show-all=false -lapp=counter --template='{{rang
 
 The `count-log-1` sidecar collects `count` container logs, create a GZIP batch and forwards to the log server endpoint.
 
-The REST call to send GZIP'ed logs to the log server endpoint is logged to STDOUT:
+The REST call time to send GZIP'ed logs to the log server endpoint is logged to STDOUT:
 
 ```
 oc logs -c count-log-1 $(oc get pods --show-all=false -lapp=counter --template='{{range .items}}{{.metadata.name}}{{end}}')
