@@ -1,0 +1,105 @@
+apiVersion: v1
+kind: DeploymentConfig
+metadata:
+  labels:
+    app: counter
+  name: counter
+spec:
+  replicas: 1
+  selector:
+    app: counter
+    deploymentconfig: counter
+  strategy:
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: Rolling
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: counter
+        deploymentconfig: counter
+    spec:
+      containers:
+      - name: count
+        image: registry.access.redhat.com/rhel7-atomic
+        args:
+          - /bin/bash
+          - -c
+          - 'i=0; while true; do if (( $i%2==0 )); then echo "$i: ${HOSTNAME}: $(date +''%Y-%m-%d
+            %H:%M:%S:%N'' | sed ''s/\(:[0-9][0-9]\)[0-9]*$/\1/'') - YOLO FOOBAR" | tee
+            -a /var/log/1.log; else echo "$i: ${HOSTNAME}: $(date +''%Y-%m-%d %H:%M:%S:%N'' | sed
+            ''s/\(:[0-9][0-9]\)[0-9]*$/\1/'')" | tee -a /var/log/1.log; fi; i=$((i+1));
+            sleep 1; done'
+        volumeMounts:
+        - name: varlog
+          mountPath: /var/log
+      - name: count-log-1
+        image: docker-registry.default.svc:5000/openshift/logging-sidecar
+        args:
+          - /bin/bash
+          - -c
+          - while true; do oc logs --since ${GETLOG_TIME} ${MY_POD_NAME} -c ${CONTAINER_NAME}
+            | grep -P ${GREP_PATTERN} | gzip -c -f | curl --data-binary @- ${LOG_SERVER_URI}
+            -H "Feed:${FEED_NAME_HEADER}" -H "System:${SYSTEM_NAME_HEADER}" -H "Environment:${ENV_NAME_HEADER}"
+            -H 'Compression:Gzip' ; sleep ${SLEEP_TIME}; done
+        env:
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: CONTAINER_NAME
+            valueFrom:
+              configMapKeyRef:
+                name: myconfigmap
+                key: container_name
+          - name: GREP_PATTERN
+            valueFrom:
+              configMapKeyRef:
+                name: myconfigmap
+                key: grep_pattern
+          - name: SLEEP_TIME
+            valueFrom:
+              configMapKeyRef:
+                name: myconfigmap
+                key: sleep_time
+          - name: GETLOG_TIME
+            valueFrom:
+              configMapKeyRef:
+                name: myconfigmap
+                key: getlog_time
+          - name: LOG_SERVER_URI
+            valueFrom:
+              configMapKeyRef:
+                name: myconfigmap
+                key: log_server_uri
+          - name: FEED_NAME_HEADER
+            valueFrom:
+              configMapKeyRef:
+                name: myconfigmap
+                key: feed_name_header
+          - name: SYSTEM_NAME_HEADER
+            valueFrom:
+              configMapKeyRef:
+                name: myconfigmap
+                key: system_name_header
+          - name: ENV_NAME_HEADER
+            valueFrom:
+              configMapKeyRef:
+                name: myconfigmap
+                key: env_name_header
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      securityContext: {}
+      terminationGracePeriodSeconds: 60
+      volumes:
+      - name: varlog
+        emptyDir: {}
+status: {}
