@@ -101,7 +101,7 @@ In the example pod, the `count` container logs once a second.
 oc logs -c count $(oc get pods --show-all=false -lapp=counter --template='{{range .items}}{{.metadata.name}}{{end}}')
 ```
 
-The `count-log-1` sidecar collects `count` container logs, create a GZIP batch and forwards to the log serverw endpoint.
+The `count-log-1` sidecar collects `count` container logs, create a GZIP batch and forwards to the log server endpoint.
 
 The REST call to send GZIP'ed logs to the log server endpoint is logged to STDOUT:
 
