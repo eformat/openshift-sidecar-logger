@@ -44,13 +44,14 @@ spec:
         args:
           - /bin/bash
           - -c
-          - 'duration=2; while [[ "${FEED_NAME_HEADER}" && "${SYSTEM_NAME_HEADER}" && "${ENV_NAME_HEADER}" ]];
-            do start=${SECONDS}; since=$(date --date="- $duration seconds" --rfc-3339=seconds | sed "s/ /T/");
-            echo "${HOSTNAME}: $(date +''%Y-%m-%d %H:%M:%S:%N'' | sed ''s/\(:[0-9][0-9]\)[0-9]*$/\1/'') duration: $duration since: $since";
-            oc logs --since-time $since ${MY_POD_NAME} -c ${CONTAINER_NAME}
-            | grep -P ${GREP_PATTERN} | gzip -c -f | curl -sS --data-binary @- ${LOG_SERVER_URI}
-            -H "Feed:${FEED_NAME_HEADER}" -H "System:${SYSTEM_NAME_HEADER}" -H "Environment:${ENV_NAME_HEADER}"
-            -H "Compression:Gzip"; sleep ${SLEEP_TIME}; duration=$((${SECONDS} - $start)); done; sleep infinity'
+          - 'sendLogs() {
+             exitSleep=$1;start=${SECONDS}; since=$(date --date="- $(($duration + $exitSleep)) seconds" --rfc-3339=seconds | sed "s/ /T/");
+             echo "${HOSTNAME}: $(date +''%Y-%m-%d %H:%M:%S:%N'' | sed ''s/\(:[0-9][0-9]\)[0-9]*$/\1/'') duration: $duration since: $since";
+             oc logs --since-time $since ${MY_POD_NAME} -c ${CONTAINER_NAME} | grep -P ${GREP_PATTERN} | gzip -c -f | curl -sS --data-binary @- ${LOG_SERVER_URI} -H "Feed:${FEED_NAME_HEADER}" -H "System:${SYSTEM_NAME_HEADER}" -H "Environment:${ENV_NAME_HEADER}" -H "Compression:Gzip"; coproc sleep ${SLEEP_TIME}; wait; duration=$((${SECONDS} - $start));
+             };
+             _term() { echo "Caught SIGTERM signal!"; sleep 55; sendLogs 55; exit 0; }; trap _term SIGTERM;
+             duration=4; while [[ "${FEED_NAME_HEADER}" && "${SYSTEM_NAME_HEADER}" && "${ENV_NAME_HEADER}" ]];
+             do sendLogs 0; done; sleep infinity'
         env:
           - name: MY_POD_NAME
             valueFrom:

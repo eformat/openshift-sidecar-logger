@@ -14,8 +14,13 @@ External service supports:
 
 Configurable Constraints:
 
-* Some duplicate log entries may be sent (using `oc log --since-time` is used for batch log collection)
+* Some duplicate log entries may be sent (using `oc log --since-time` is used for batch log collection) which is accurate to `seconds` only.
 * The sidecar collects logs approximately every `sleep_time` seconds. There is some variable amount of time based on processing time and actual sidecar sleep time that is factored into log collection time.
+
+Features:
+
+* Takes into account sending time in seconds to minimise duplicate log entries
+* SIGTERM is handled to take into account `terminationGracePeriodSeconds` which defaults to 60 seconds. Graceful termination and startup requires more fine tuning.
 
 ## Usage
 
