@@ -36,7 +36,6 @@ Build the `logging-sidecar` image so it can be shared in the `openshift` namespa
 
 ```
 oc new-build -n openshift --name=logging-sidecar --strategy=docker --context-dir=docker https://github.com/eformat/openshift-sidecar-logger
-oc start-build logging-sidecar -f
 ```
 
 #### Configuration
