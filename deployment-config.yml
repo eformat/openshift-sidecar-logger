@@ -32,26 +32,16 @@ spec:
           - /bin/bash
           - -c
           - 'i=0; while true; do if (( $i%2==0 )); then echo "$i: ${HOSTNAME}: $(date +''%Y-%m-%d
-            %H:%M:%S:%N'' | sed ''s/\(:[0-9][0-9]\)[0-9]*$/\1/'') - YOLO FOOBAR" | tee
-            -a /var/log/1.log; else echo "$i: ${HOSTNAME}: $(date +''%Y-%m-%d %H:%M:%S:%N'' | sed
-            ''s/\(:[0-9][0-9]\)[0-9]*$/\1/'')" | tee -a /var/log/1.log; fi; i=$((i+1));
+            %H:%M:%S:%N'' | sed ''s/\(:[0-9][0-9]\)[0-9]*$/\1/'') - YOLO FOOBAR";
+            else echo "$i: ${HOSTNAME}: $(date +''%Y-%m-%d %H:%M:%S:%N'' | sed
+            ''s/\(:[0-9][0-9]\)[0-9]*$/\1/'')"; fi; i=$((i+1));
             sleep 1; done'
-        volumeMounts:
-        - name: varlog
-          mountPath: /var/log
       - name: logging-sidecar
         image: docker-registry.default.svc:5000/openshift/logging-sidecar
         args:
           - /bin/bash
           - -c
-          - 'sendLogs() {
-             exitSleep=$1;start=${SECONDS}; since=$(date --date="- $(($duration + $exitSleep)) seconds" --rfc-3339=seconds | sed "s/ /T/");
-             echo "${HOSTNAME}: $(date +''%Y-%m-%d %H:%M:%S:%N'' | sed ''s/\(:[0-9][0-9]\)[0-9]*$/\1/'') duration: $duration since: $since";
-             oc logs --since-time $since ${MY_POD_NAME} -c ${CONTAINER_NAME} | grep -P ${GREP_PATTERN} | gzip -c -f | curl -sS --data-binary @- ${LOG_SERVER_URI} -H "Feed:${FEED_NAME_HEADER}" -H "System:${SYSTEM_NAME_HEADER}" -H "Environment:${ENV_NAME_HEADER}" -H "Compression:Gzip"; coproc sleep ${SLEEP_TIME}; wait; duration=$((${SECONDS} - $start));
-             };
-             _term() { echo "Caught SIGTERM signal!"; sleep 55; sendLogs 55; exit 0; }; trap _term SIGTERM;
-             duration=5; while [[ "${FEED_NAME_HEADER}" && "${SYSTEM_NAME_HEADER}" && "${ENV_NAME_HEADER}" ]];
-             do sendLogs 0; done; sleep infinity'
+          - /usr/local/bin/sidecar-logging.sh
         env:
           - name: MY_POD_NAME
             valueFrom:
@@ -98,7 +88,4 @@ spec:
       restartPolicy: Always
       securityContext: {}
       terminationGracePeriodSeconds: 60
-      volumes:
-      - name: varlog
-        emptyDir: {}
 status: {}

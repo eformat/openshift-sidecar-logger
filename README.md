@@ -32,10 +32,11 @@ The logging sidecar is:
 * based on a supported image
 * simple to configure
 
-Build the `logging-sidecar` image so it can be shared in the `openshift` namespace. Requires a user with `edit` permission on the `openshift` namespace:
+Build the `logging-sidecar` image so it can be shared in the `openshift` namespace. Requires a user with `edit` permission on the `openshift` namespace.
 
 ```
-oc new-build -n openshift --name=logging-sidecar -D $'FROM registry.access.redhat.com/rhel7-atomic\nRUN microdnf --enablerepo=rhel-7-server-ose-3.6-rpms --enablerepo=rhel-7-server-rpms install atomic-openshift-clients-3.6.173.0.21-1.git.0.f95b0e7.el7.x86_64 --nodocs; microdnf clean all'
+oc new-build -n openshift --name=logging-sidecar --strategy=docker --context-dir=docker https://github.com/eformat/openshift-sidecar-logger
+oc start-build logging-sidecar -f
 ```
 
 #### Configuration
