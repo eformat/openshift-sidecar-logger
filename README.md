@@ -46,7 +46,7 @@ Parameter            | Description             | Example Value
 -------------------- | ----------------------- | -------------
 `container_name` | Name of the container to retrieve logs from | count
 `grep_pattern` | PCRE Pattern to pass to `grep` (see man grep -P) | Y\w+\s+F\w+$
-`sleep_time` | Time for logging sidecar to sleep (seconds) | '60'
+`sleep_time` | Time for logging sidecar to sleep (seconds). Send a batch approximately every `sleep_time` seconds | '60'
 `log_server_uri` | Batch log collection server URI | 'http://localhost:8080/datafeed'
 `feed_name_header` | Feed Name Header value| CSV_FEED
 `system_name_header` | System Name Header value | EXAMPLE_SYSTEM
