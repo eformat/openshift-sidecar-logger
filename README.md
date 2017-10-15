@@ -63,6 +63,33 @@ If any `one` of the following `ConfigMap` entries are unset, the sidecar logger 
   env_name_header: ''
 ```
 
+#### Journald
+
+Since OpensShift containers uses rthe docker -> journald driver, you may need to configure the journald subsystem on your nodes so as not to miss log messages at higher rates (>33/s)
+
+By default systemd allows 1,000 messages within a 30 second period.
+
+The limits are controlled in the `/etc/systemd/journald.conf` file.
+
+```
+RateLimitInterval=30s
+RateLimitBurst=1000
+```
+
+You will see mesasges such as this if you need to allow more messages:
+
+```
+Oct 11 02:37:40 node06 journal: Suppressed 17 messages from /system.slice/docker.service
+Oct 11 02:48:40 node06 journal: Suppressed 1342 messages from /system.slice/docker.service
+Oct 11 02:49:10 node06 journal: Suppressed 1237 messages from /system.slice/docker.service
+```
+
+It can be tested with:
+
+```
+seq 1 3000 | logger
+```
+
 #### Create example project
 
 As a normal user:
