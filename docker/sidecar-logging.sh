@@ -3,12 +3,22 @@
 # debug on fail
 set -euo pipefail
 
-#
-# TTD - check args
-#
-# ${SLEEP_TIME} >= 5 sec <= 3600 min ??
-# check HEADERS
-#
+# required
+: "${DEDUPE:?You must set deduplication}"
+: "${MY_POD_NAME:?Pod name should be set from downward api}"
+: "${CONTAINER_NAME:?You must set container name}"
+: "${GREP_PATTERN:?You must set grep filter pattern}"
+: "${LOG_SERVER_URI:?You must set logging server endpoint}"
+: "${FEED_NAME_HEADER?You must set feed header name or set blank for noop}"
+: "${SYSTEM_NAME_HEADER?You must set system header name or set blank for noop}"
+: "${ENV_NAME_HEADER?You must set environment header name or set blank for noop}"
+
+# sensible defaults if not set
+: "${DEDUPE:=true}"
+: "${SLEEP_TIME:=60}"
+: "${GRACEFUL_EXIT_TIME:=55}"
+: "${HOSTNAME:=unknown}"
+: "${STARTUP_TIME:=20}"
 
 # filtered openshift logs for container
 oc_logs='oc logs --since-time $since ${MY_POD_NAME} -c ${CONTAINER_NAME} | grep -P ${GREP_PATTERN}'
