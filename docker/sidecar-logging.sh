@@ -76,7 +76,7 @@ sendLogs() {
 # sig handler for TERM sent by openshift when pod is stopped or deleted
 # need to adjust for graceful termination of the container we are getting logs for
 _term() {
-  echo "Caught SIGTERM signal!"
+  echo "Caught SIGTERM signal! Waiting ${GRACEFUL_EXIT_TIME} seconds before sending"
   sleep ${GRACEFUL_EXIT_TIME}
   sendLogs ${GRACEFUL_EXIT_TIME}
   # exit gracefully
