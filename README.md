@@ -43,9 +43,9 @@ oc new-build -n openshift --name=logging-sidecar --strategy=docker --context-dir
 A `ConfigMap` is used to configure the sidecar logging container.
 
 Parameter            | Description             | Example Value
--------------------- | ----------------------- | -------------
+-------------------- | ----------------------- | ------------- 
 `container_name` | Name of the container to retrieve logs from | count
-`grep_pattern` | PCRE Pattern to pass to `grep` (see man grep -P) | Y\w+\s+F\w+$
+`grep_pattern` | Filter logs from `container_name` using PCRE Pattern to pass to `grep` (see man grep -P) | Y\w+\s+F\w+$
 `sleep_time` | Time for logging sidecar to sleep (seconds). Send a batch approximately every `sleep_time` seconds | '60'
 `log_server_uri` | Batch log collection server URI | 'http://localhost:8080/datafeed'
 `feed_name_header` | Feed Name Header value| CSV_FEED
@@ -54,7 +54,7 @@ Parameter            | Description             | Example Value
 `dedupe` | Remove duplicate log line entries | true
 `graceful_exit_time` | Time for container (set by `container_name`) to gracefully exit (seconds) | 55
 
-If any `one` of the following `ConfigMap` entries are unset, the sidecar logger be a noop (do nothing):
+If any `one` of the following `ConfigMap` entries are unset, the sidecar logger performs a noop:
 
 ```
   feed_name_header: ''
