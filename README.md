@@ -76,6 +76,12 @@ RateLimitInterval=30s
 RateLimitBurst=1000
 ```
 
+Change these then restart journald
+
+```
+systemctl restart systemd-journald
+```
+
 You will see mesasges such as this if you need to allow more messages:
 
 ```
