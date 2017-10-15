@@ -53,6 +53,7 @@ Parameter            | Description             | Example Value
 `env_name_header` | Environment Name Header value | 'EXAMPLE_ENVIRONMENT'
 `dedupe` | Remove duplicate log line entries | 'true'
 `graceful_exit_time` | Time for container (set by `container_name`) to gracefully exit (seconds) | '55'
+`startup_time` | Estimated time for logging sidecar container to start (seconds) | '15'
 
 If any `one` of the following `ConfigMap` entries are unset, the sidecar logger performs a noop:
 

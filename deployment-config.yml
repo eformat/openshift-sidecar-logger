@@ -92,6 +92,11 @@ spec:
               configMapKeyRef:
                 name: logging-sidecar
                 key: graceful_exit_time
+          - name: STARTUP_TIME
+            valueFrom:
+              configMapKeyRef:
+                name: logging-sidecar
+                key: startup_time
         resources: {}
         terminationMessagePath: /dev/termination-log
       dnsPolicy: ClusterFirst

@@ -85,7 +85,7 @@ _term() {
 trap _term SIGTERM
 
 # initial startup delay for container we a getting logs for and ourselves
-duration=5;
+duration=${STARTUP_TIME};
 
 # set variables to send logs
 while [[ "${FEED_NAME_HEADER}" && "${SYSTEM_NAME_HEADER}" && "${ENV_NAME_HEADER}" ]];
