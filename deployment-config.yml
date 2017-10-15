@@ -82,6 +82,11 @@ spec:
               configMapKeyRef:
                 name: logging-sidecar
                 key: env_name_header
+          - name: DEDUPE
+            valueFrom:
+              configMapKeyRef:
+                name: logging-sidecar
+                key: dedupe
         resources: {}
         terminationMessagePath: /dev/termination-log
       dnsPolicy: ClusterFirst

@@ -1,20 +1,45 @@
 #!/usr/bin/env bash
 
 # debug on fail
-set -euxo pipefail
+set -euo pipefail
 
-# logs are sequential in time.
-# remove duplicates based on previous log send if present
-# stored in ephemeral volume
-newSend() {
-  echo
-  # strategy
-  # if (deDupe)
-  #   oc logs | grep > /var/log/container-2.log
-  #   tail /var/log/container-1.log
-  #   echo /var/log/container-1.log /var/log/container-2.log | sort | uniq | gzip | curl
-  # else
-  #   oc logs | grep | gzip | curl
+oc_logs='oc logs --since-time $since ${MY_POD_NAME} -c ${CONTAINER_NAME} | grep -P ${GREP_PATTERN}'
+gzip_curl='gzip -c -f | curl -sS --data-binary @- ${LOG_SERVER_URI} -H "Feed:${FEED_NAME_HEADER}" -H "System:${SYSTEM_NAME_HEADER}" -H "Environment:${ENV_NAME_HEADER}" -H "Compression:Gzip"'
+
+_send() {
+  if [ ! "x${DEDUPE}" = xtrue ]; then
+    # do not handle duplicates
+    eval $oc_logs | eval $gzip_curl;
+    return
+  fi
+
+  # remove duplicates based on previous log send if present
+  file1=/tmp/001.dat
+  file2=/tmp/002.dat
+
+  if [[ ! -f "$file1" && ! -f "$file2" ]]
+  then
+    #echo "no 1 or 2"
+	eval $oc_logs > $file1
+	cat $file1 | eval $gzip_curl;
+  elif [[ -f "$file1" && ! -f "$file2" ]]
+  then
+    #echo "1 no 2"
+    eval $oc_logs > $file2
+    grep -v -x -f $file1 $file2 | eval $gzip_curl;
+    rm -f $file1
+  elif [[ ! -f "$file1" && -f "$file2" ]]
+  then
+    #echo "2 no 1"
+    eval $oc_logs > $file1
+    grep -v -x -f $file2 $file1 | eval $gzip_curl;
+    rm -f $file2
+  else
+	#echo "warning both file1 file2 found"
+    eval $oc_logs | eval $gzip_curl;
+    rm -f $file1 $file2
+  fi
+
 };
 
 # sends our logs using curl
@@ -26,9 +51,9 @@ sendLogs() {
   # get the datetime for log retrieval. take account of previous duration and sleep
   since=$(date --date="- $(($duration + $exitSleep)) seconds" --rfc-3339=seconds | sed "s/ /T/")
   # debug
-  echo "${HOSTNAME}: $(date +''%Y-%m-%d %H:%M:%S:%N'' | sed ''s/\(:[0-9][0-9]\)[0-9]*$/\1/'') duration: $duration since: $since"
+  echo "${HOSTNAME}: $(date +'%Y-%m-%d %H:%M:%S' | sed 's/\(:[0-9][0-9]\)[0-9]*$/\1/') duration: $duration since: $since"
   # use openshift client to get logs, gzip them and use curl to send to REST endpoint
-  oc logs --since-time $since ${MY_POD_NAME} -c ${CONTAINER_NAME} | grep -P ${GREP_PATTERN} | gzip -c -f | curl -sS --data-binary @- ${LOG_SERVER_URI} -H "Feed:${FEED_NAME_HEADER}" -H "System:${SYSTEM_NAME_HEADER}" -H "Environment:${ENV_NAME_HEADER}" -H "Compression:Gzip";
+  _send
   # this is equivalent to backgrouding our sleep, so we can interrupt when container halted
   coproc sleep ${SLEEP_TIME}
   wait

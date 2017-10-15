@@ -51,6 +51,7 @@ Parameter            | Description             | Example Value
 `feed_name_header` | Feed Name Header value| CSV_FEED
 `system_name_header` | System Name Header value | EXAMPLE_SYSTEM
 `env_name_header` | Environment Name Header value | EXAMPLE_ENVIRONMENT
+`dedupe` | Remove duplicate log line entries | true
 
 If any `one` of the following `ConfigMap` entries are unset, the sidecar logger be a noop (do nothing):
 
@@ -110,7 +111,7 @@ The example uses `YOLO FOOBAR` as the string we filter against using the PCRE `g
 In the example pod, the `count` container logs once a second.
 
 ```
-oc logs -c count $(oc get pods --show-all=false -lapp=counter --template='{{range .items}}{{.metadata.name}}{{end}}')
+oc logs -c count $(oc get pods --show-all=false -lapp=counter --template='{{range .items}}{{.metadata.name}}{{end}}') -f
 ```
 
 The `logging-sidecar` sidecar collects `count` container logs, create a GZIP batch and forwards to the log server endpoint.
@@ -118,5 +119,5 @@ The `logging-sidecar` sidecar collects `count` container logs, create a GZIP bat
 The REST call time to send GZIP'ed logs to the log server endpoint is logged to STDOUT, any errors will also be reported here:
 
 ```
-oc logs -c logging-sidecar $(oc get pods --show-all=false -lapp=counter --template='{{range .items}}{{.metadata.name}}{{end}}')
+oc logs -c logging-sidecar $(oc get pods --show-all=false -lapp=counter --template='{{range .items}}{{.metadata.name}}{{end}}') -f
 ```
