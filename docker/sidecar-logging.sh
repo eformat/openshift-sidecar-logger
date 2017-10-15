@@ -77,8 +77,8 @@ sendLogs() {
 # need to adjust for graceful termination of the container we are getting logs for
 _term() {
   echo "Caught SIGTERM signal!"
-  sleep 55
-  sendLogs 55
+  sleep ${GRACEFUL_EXIT_TIME}
+  sendLogs ${GRACEFUL_EXIT_TIME}
   # exit gracefully
   exit 0
 }
