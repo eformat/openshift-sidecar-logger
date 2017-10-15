@@ -3,6 +3,13 @@
 # debug on fail
 set -euo pipefail
 
+#
+# TTD - check args
+#
+# ${SLEEP_TIME} >= 5 sec <= 3600 min ??
+# check HEADERS
+#
+
 # filtered openshift logs for container
 oc_logs='oc logs --since-time $since ${MY_POD_NAME} -c ${CONTAINER_NAME} | grep -P ${GREP_PATTERN}'
 # send zipped to endpoint
@@ -17,7 +24,7 @@ _send() {
 
   # removes duplicates
   (
-    # wait for lock (fd 200) for 2 seconds
+    # wait for exclusive lock (fd 200) for 2 seconds
     flock -x -w 2 200
 
     # stores logs temporarily, rotating two files

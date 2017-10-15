@@ -11,3 +11,4 @@ data:
   system_name_header: EXAMPLE_SYSTEM
   env_name_header: EXAMPLE_ENVIRONMENT
   dedupe: 'true'
+  graceful_exit_time: '55'

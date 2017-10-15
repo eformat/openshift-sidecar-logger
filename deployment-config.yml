@@ -87,6 +87,11 @@ spec:
               configMapKeyRef:
                 name: logging-sidecar
                 key: dedupe
+          - name: GRACEFUL_EXIT_TIME
+            valueFrom:
+              configMapKeyRef:
+                name: logging-sidecar
+                key: graceful_exit_time
         resources: {}
         terminationMessagePath: /dev/termination-log
       dnsPolicy: ClusterFirst
