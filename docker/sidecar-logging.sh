@@ -3,7 +3,9 @@
 # debug on fail
 set -euo pipefail
 
+# filtered openshift logs for container
 oc_logs='oc logs --since-time $since ${MY_POD_NAME} -c ${CONTAINER_NAME} | grep -P ${GREP_PATTERN}'
+# send zipped to endpoint
 gzip_curl='gzip -c -f | curl -sS --data-binary @- ${LOG_SERVER_URI} -H "Feed:${FEED_NAME_HEADER}" -H "System:${SYSTEM_NAME_HEADER}" -H "Environment:${ENV_NAME_HEADER}" -H "Compression:Gzip"'
 
 _send() {
@@ -75,9 +77,10 @@ trap _term SIGTERM
 # initial startup delay for container we a getting logs for and ourselves
 duration=5;
 
-# we noop and sleep forever if these variables are not set
+# set variables to send logs
 while [[ "${FEED_NAME_HEADER}" && "${SYSTEM_NAME_HEADER}" && "${ENV_NAME_HEADER}" ]];
   do sendLogs 0
 done
 
+# sidecar does nothing if a header is empty
 sleep infinity
