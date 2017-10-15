@@ -44,15 +44,15 @@ A `ConfigMap` is used to configure the sidecar logging container.
 
 Parameter            | Description             | Example Value
 -------------------- | ----------------------- | ------------- 
-`container_name` | Name of the container to retrieve logs from | count
-`grep_pattern` | Filter logs from `container_name` using PCRE Pattern to pass to `grep` (see man grep -P) | Y\w+\s+F\w+$
+`container_name` | Name of the container to retrieve logs from | 'count'
+`grep_pattern` | Filter logs from `container_name` using PCRE Pattern to pass to `grep` (see man grep -P) | 'Y\w+\s+F\w+$'
 `sleep_time` | Time for logging sidecar to sleep (seconds). Send a batch approximately every `sleep_time` seconds | '60'
 `log_server_uri` | Batch log collection server URI | 'http://localhost:8080/datafeed'
-`feed_name_header` | Feed Name Header value| CSV_FEED
-`system_name_header` | System Name Header value | EXAMPLE_SYSTEM
-`env_name_header` | Environment Name Header value | EXAMPLE_ENVIRONMENT
-`dedupe` | Remove duplicate log line entries | true
-`graceful_exit_time` | Time for container (set by `container_name`) to gracefully exit (seconds) | 55
+`feed_name_header` | Feed Name Header value| 'CSV_FEED'
+`system_name_header` | System Name Header value | 'EXAMPLE_SYSTEM'
+`env_name_header` | Environment Name Header value | 'EXAMPLE_ENVIRONMENT'
+`dedupe` | Remove duplicate log line entries | 'true'
+`graceful_exit_time` | Time for container (set by `container_name`) to gracefully exit (seconds) | '55'
 
 If any `one` of the following `ConfigMap` entries are unset, the sidecar logger performs a noop:
 
