@@ -15,32 +15,35 @@ _send() {
     return
   fi
 
-  # remove duplicates based on previous log send if present
-  file1=/tmp/001.dat
-  file2=/tmp/002.dat
+  # removes duplicates
+  (
+    # wait for lock (fd 200) for 2 seconds
+    flock -x -w 2 200
 
-  if [[ ! -f "$file1" && ! -f "$file2" ]]
-  then
-    #echo "no 1 or 2"
-	eval $oc_logs > $file1
-	cat $file1 | eval $gzip_curl;
-  elif [[ -f "$file1" && ! -f "$file2" ]]
-  then
-    #echo "1 no 2"
-    eval $oc_logs > $file2
-    grep -v -x -f $file1 $file2 | eval $gzip_curl;
-    rm -f $file1
-  elif [[ ! -f "$file1" && -f "$file2" ]]
-  then
-    #echo "2 no 1"
-    eval $oc_logs > $file1
-    grep -v -x -f $file2 $file1 | eval $gzip_curl;
-    rm -f $file2
-  else
-	#echo "warning both file1 file2 found"
-    eval $oc_logs | eval $gzip_curl;
-    rm -f $file1 $file2
-  fi
+    # stores logs temporarily, rotating two files
+    file1=/tmp/001.dat
+    file2=/tmp/002.dat
+
+    # grep (-v) select non-matching lines, (-x) that match whole lines, (-f) get patterns from files
+    if [[ ! -f "$file1" && ! -f "$file2" ]]
+    then
+	  eval $oc_logs > $file1
+	  cat $file1 | eval $gzip_curl;
+    elif [[ -f "$file1" && ! -f "$file2" ]]
+    then
+      eval $oc_logs > $file2
+      grep -v -x -f $file1 $file2 | eval $gzip_curl;
+      rm -f $file1
+    elif [[ ! -f "$file1" && -f "$file2" ]]
+    then
+      eval $oc_logs > $file1
+      grep -v -x -f $file2 $file1 | eval $gzip_curl;
+      rm -f $file2
+    else
+      eval $oc_logs | eval $gzip_curl;
+      rm -f $file1 $file2
+    fi
+  ) 200>/tmp/.data.lock
 
 };
 
