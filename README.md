@@ -63,6 +63,8 @@ If any `one` of the following `ConfigMap` entries are unset, the sidecar logger 
   env_name_header: ''
 ```
 
+Set the environment variable `DEBUG=true` to see verbose debug in sidecar logger.
+
 #### Journald
 
 Since OpensShift containers uses rthe docker -> journald driver, you may need to configure the journald subsystem on your nodes so as not to miss log messages at higher rates (>33/s)

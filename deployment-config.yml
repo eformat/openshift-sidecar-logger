@@ -97,6 +97,8 @@ spec:
               configMapKeyRef:
                 name: logging-sidecar
                 key: startup_time
+          - name: DEBUG
+            value: "false"
         resources: {}
         terminationMessagePath: /dev/termination-log
       dnsPolicy: ClusterFirst
