@@ -45,6 +45,9 @@ _send() {
     file1=/tmp/001.dat
     file2=/tmp/002.dat
 
+    # in case there is no match
+    touch $file1 $file2
+
     # grep (-v) select non-matching lines, (-x) that match whole lines, (-f) get patterns from files
     if [[ ! -f "$file1" && ! -f "$file2" ]]
     then
